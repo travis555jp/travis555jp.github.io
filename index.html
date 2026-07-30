@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="GaroonCalLinkは、Garoonの本人予定を指定したGoogleカレンダーへ一方向に自動同期するWindows向けツールです。">
+  <title>GaroonCalLink | Garoon予定をGoogleカレンダーへ同期</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="./favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="./"><span class="mark">G</span>GaroonCalLink</a>
+    <nav><a href="#about">概要</a><a href="#data">データ利用</a><a href="./privacy/">プライバシー</a></nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">GARoon → GOOGLE CALENDAR</p>
+      <h1>GaroonCalLink</h1>
+      <p class="lead">Garoonの本人予定を、利用者が指定したGoogleカレンダーへ一方向に自動同期するWindows向けツールです。</p>
+      <div class="chips"><span>約4時間ごとに同期</span><span>重複を防止</span><span>非公開予定に配慮</span></div>
+    </section>
+
+    <section class="section" id="about">
+      <p class="kicker">APP PURPOSE</p>
+      <h2>予定を確認しやすい場所へ、安全に反映</h2>
+      <p>GaroonCalLinkは、利用者本人のGaroon予定をGoogleカレンダーでも確認できるようにするための補助ツールです。GoogleカレンダーからGaroonへの逆方向の同期は行いません。</p>
+      <div class="cards">
+        <article><b>01</b><h3>一方向の自動同期</h3><p>Garoonに登録された本人予定を、指定された専用Googleカレンダーへ約4時間ごとに反映します。</p></article>
+        <article><b>02</b><h3>重複を防止</h3><p>同じ予定を繰り返し作成せず、変更時は対応するGoogleカレンダーの予定を更新します。</p></article>
+        <article><b>03</b><h3>必要最小限の転送</h3><p>参加者情報や招待通知は転送しません。非公開予定は詳細を送らず「予定あり」として扱います。</p></article>
+      </div>
+    </section>
+
+    <section class="section panel" id="data">
+      <p class="kicker">GOOGLE USER DATA</p>
+      <h2>Googleユーザーデータの利用</h2>
+      <p>本アプリは、利用者が指定したGoogleカレンダー内の予定を表示・作成・変更・削除するために、Google Calendar APIの <code>calendar.events</code> 権限を使用します。</p>
+      <dl>
+        <div><dt>利用目的</dt><dd>Garoon予定を指定されたGoogleカレンダーへ同期するためだけに使用します。</dd></div>
+        <div><dt>保存場所</dt><dd>OAuthトークンと設定は利用者のWindows PC内に保存します。</dd></div>
+        <div><dt>外部サーバー</dt><dd>運営者が管理するサーバーへ予定内容や認証情報を保存しません。</dd></div>
+        <div><dt>第三者提供</dt><dd>Googleユーザーデータを販売、広告利用、または第三者へ提供しません。</dd></div>
+      </dl>
+      <p class="note">詳細は<a href="./privacy/">プライバシーポリシー</a>をご確認ください。</p>
+    </section>
+
+    <section class="section">
+      <p class="kicker">ENGLISH SUMMARY</p>
+      <h2>About GaroonCalLink</h2>
+      <p>GaroonCalLink is a Windows utility that synchronizes the signed-in user's Garoon schedule one-way to a Google Calendar selected by that user. Google Calendar event data is accessed only to provide this synchronization feature. Tokens and settings remain on the user's PC.</p>
+    </section>
+  </main>
+
+  <footer><span>GaroonCalLink</span><span><a href="./privacy/">Privacy Policy</a> · <a href="./terms/">Terms</a></span><small>Googleおよびサイボウズ株式会社とは独立したツールです。</small></footer>
+</body>
+</html>
