@@ -1,24 +1,37 @@
 /* ================= 8-bit BGM (Web Audio, no files) ================= */
 const BGM = {
   started: false,
+  starting: false,
   timer: null,
   step: 0,
   nextTime: 0,
   mode: '',
-  master: 0.035,
+  master: 0.055,
 
   note(n) {
     if (n == null) return 0;
     return 440 * Math.pow(2, (n - 69) / 12);
   },
 
-  init() {
-    if (this.started) return;
-    SFX.init();
-    if (!SFX.ac) return;
-    this.started = true;
-    this.nextTime = SFX.ac.currentTime + 0.05;
-    this.timer = setInterval(() => this.schedule(), 60);
+  async init() {
+    if (this.started || this.starting) return;
+    this.starting = true;
+    try {
+      SFX.init();
+      if (!SFX.ac) { this.starting = false; return; }
+      if (SFX.ac.state !== 'running') await SFX.ac.resume();
+      if (SFX.ac.state !== 'running') { this.starting = false; return; }
+
+      this.started = true;
+      this.starting = false;
+      this.step = 0;
+      this.mode = '';
+      this.nextTime = SFX.ac.currentTime + 0.03;
+      this.schedule();
+      this.timer = setInterval(() => this.schedule(), 50);
+    } catch (e) {
+      this.starting = false;
+    }
   },
 
   currentMode() {
@@ -30,20 +43,20 @@ const BGM = {
   },
 
   pulse(freq, time, dur, vol, type='square') {
-    if (!SFX.ac || !freq) return;
+    if (!SFX.ac || !freq || SFX.ac.state !== 'running') return;
     const o = SFX.ac.createOscillator();
     const g = SFX.ac.createGain();
     o.type = type;
     o.frequency.setValueAtTime(freq, time);
-    g.gain.setValueAtTime(vol, time);
-    g.gain.setValueAtTime(vol, Math.max(time, time + dur - 0.025));
+    g.gain.setValueAtTime(Math.max(0.0001, vol), time);
+    g.gain.setValueAtTime(Math.max(0.0001, vol), Math.max(time, time + dur - 0.025));
     g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
     o.connect(g); g.connect(SFX.ac.destination);
     o.start(time); o.stop(time + dur + 0.02);
   },
 
-  kick(time, vol=0.018) {
-    if (!SFX.ac) return;
+  kick(time, vol=0.02) {
+    if (!SFX.ac || SFX.ac.state !== 'running') return;
     const o = SFX.ac.createOscillator();
     const g = SFX.ac.createGain();
     o.type = 'square';
@@ -83,38 +96,36 @@ const BGM = {
   },
 
   schedule() {
-    if (!this.started || !SFX.ac) return;
-    if (SFX.ac.state === 'suspended') return;
+    if (!this.started || !SFX.ac || SFX.ac.state !== 'running') return;
 
     const m = this.currentMode();
     if (m !== this.mode) {
       this.mode = m;
       this.step = 0;
-      this.nextTime = Math.max(this.nextTime, SFX.ac.currentTime + 0.03);
+      this.nextTime = SFX.ac.currentTime + 0.03;
     }
 
     const p = this.patterns[m];
-    const beat = 60 / p.bpm / 2; // eighth-note steps
+    const beat = 60 / p.bpm / 2;
 
-    while (this.nextTime < SFX.ac.currentTime + 0.18) {
+    while (this.nextTime < SFX.ac.currentTime + 0.20) {
       const i = this.step % 16;
       const t = this.nextTime;
-
       this.pulse(this.note(p.lead[i]), t, beat * 0.72, this.master, 'square');
       this.pulse(this.note(p.harmony[i]), t, beat * 0.58, this.master * 0.45, 'square');
-      this.pulse(this.note(p.bass[i]), t, beat * 0.88, this.master * 0.7, 'triangle');
-
-      if (i % 4 === 0) this.kick(t, this.master * 0.55);
-      if (m === 'gekokujo' && i % 2 === 1) this.pulse(this.note(91), t, beat * 0.14, this.master * 0.18, 'square');
-
+      this.pulse(this.note(p.bass[i]), t, beat * 0.88, this.master * 0.75, 'triangle');
+      if (i % 4 === 0) this.kick(t, this.master * 0.65);
+      if (m === 'gekokujo' && i % 2 === 1) this.pulse(this.note(91), t, beat * 0.14, this.master * 0.20, 'square');
       this.step++;
       this.nextTime += beat;
     }
   }
 };
 
-// iPhone/Safari requires audio to begin after a user gesture.
-const startBGM = () => BGM.init();
-addEventListener('pointerdown', startBGM, { passive: true });
-addEventListener('touchstart', startBGM, { passive: true });
-addEventListener('keydown', startBGM, { passive: true });
+// iPhone/Safari: unlock audio only from a real user gesture, then start BGM.
+const unlockBGM = () => { BGM.init(); };
+document.addEventListener('touchstart', unlockBGM, { passive: true, capture: true });
+document.addEventListener('touchend', unlockBGM, { passive: true, capture: true });
+document.addEventListener('pointerdown', unlockBGM, { passive: true, capture: true });
+document.addEventListener('click', unlockBGM, { passive: true, capture: true });
+document.addEventListener('keydown', unlockBGM, { passive: true, capture: true });
